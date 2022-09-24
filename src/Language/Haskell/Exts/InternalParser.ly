@@ -119,6 +119,7 @@ Conflicts: 7 shift/reduce
 >       QCONSYM  { Loc _ (QConSym _) }
 >       INT      { Loc _ (IntTok _) }
 >       RATIONAL { Loc _ (FloatTok _) }
+>       VERSION  { Loc _ (VersionTok _) }
 >       CHAR     { Loc _ (Character _) }
 >       STRING   { Loc _ (StringTok _) }
 
@@ -251,6 +252,8 @@ Reserved Ids
 >       'infixr'        { Loc $$ KW_InfixR }        -- 110
 >       'instance'      { Loc $$ KW_Instance }
 >       'let'           { Loc $$ KW_Let }
+>       'version'       { Loc $$ KW_Ver }
+>       'unversion'     { Loc $$ KW_UVer }
 >       'mdo'           { Loc $$ KW_MDo }
 >       'module'        { Loc $$ KW_Module }         -- 114
 >       'newtype'       { Loc $$ KW_NewType }
@@ -847,6 +850,29 @@ binding.
 >       | open ipbinds close            { let l' =  ann . last $ fst $2
 >                                          in IPBinds (nIS $1 <++> l' <** snd $2) (fst $2) }
 
+> vbinds :: { VBinds L }
+-- >       : '{' vbinds_ '}'               { VBinds ($1 <^^> $3 <** snd $2) (fst $2) }
+>       : '{' vbinds_ '}'               { VBinds ($1 <^^> $3 <** ($1:snd $2++[$3])) (fst $2) }
+>       | open vbinds_ close              { let l' = if null (fst $2) then nIS $3 else (ann . last $ fst $2)
+>                                            in VBinds (nIS $1 <++> l' <** ($1:snd $2++[$3])) (fst $2) }
+-- >       : '{'  decls '}'                { BDecls ($1 <^^> $3 <** ($1:snd $2++[$3])) (fst $2) }
+-- >       | open decls close              { let l' = if null (fst $2) then nIS $3 else (ann . last $ fst $2)
+-- >                                          in BDecls (nIS $1 <++> l' <** ($1:snd $2++[$3])) (fst $2) }
+
+> vbinds_ :: { ([VBind L],[S]) }
+>        : optsemis vbinds1 optsemis    { (reverse (fst $2), reverse $1 ++ snd $2 ++ reverse $3) }
+
+> vbinds1 :: { ([VBind L],[S]) }
+>       : vbinds1 semis vbind          { ($3 : fst $1, snd $1 ++ reverse $2) }
+>       | vbind                        { ([$1],[]) }
+
+> vbind :: { VBind L }
+>       : modid '=' version              { VBind ($1 <> $3 <** [$2]) $1 $3 }
+
+> version :: { VersionNumber L }
+>         : VERSION                     { let { Loc l1 (VersionTok (s1,s2,s3)) = $1 }
+>                                         in VersionNumber (nIS l1) (read s1 :: Int) (read s2 :: Int) (read s3 :: Int) }
+
 ATTENTION: Dirty Hackery Ahead! If the second alternative of vars is var
 instead of qvar, we get another shift/reduce-conflict. Consider the
 following programs:
@@ -856,7 +882,7 @@ following programs:
 
 We re-use expressions for patterns, so a qvar would be allowed in patterns
 instead of a var only (which would be correct). But deciding what the + is,
-would require more lookahead. So let's check for ourselves...
+would require more lookahead. So lets check for ourselves...
 
 > vars  :: { ([Name L],[S],L) }
 >       : vars ',' var                  { let (ns,ss,l) = $1 in ($3 : ns, $2 : ss, l <++> ann $3) }
@@ -1397,7 +1423,7 @@ Guards may contain patterns if PatternGuards is enabled, hence quals instead of 
 Expressions
 
 Note: The Report specifies a meta-rule for lambda, let and if expressions
-(the exp's that end with a subordinate exp): they extend as far to
+(the exps that end with a subordinate exp): they extend as far to
 the right as possible.  That means they cannot be followed by a type
 signature or infix application.  To implement this without shift/reduce
 conflicts, we split exp10 into these expressions (exp10a) and the others
@@ -1442,6 +1468,8 @@ mangle them into the correct form depending on context.
 >       : '\\' apats '->' exp             { Lambda (nIS $1 <++> ann $4 <** [$1,$3]) (reverse $2) $4 }
 A let may bind implicit parameters
 >       | 'let' binds 'in' exp            { Let    (nIS $1 <++> ann $4 <** [$1,$3])    $2 $4 }
+>       | 'version' vbinds 'of' exp       { VRes   (nIS $1 <++> ann $4 <** [$1,$3])    $2 $4 }
+>       | 'unversion' exp                 { VExt   (nIS $1 <++> ann $2)  $2 }
 >       | 'if' exp optlayoutsemi 'then' exp optlayoutsemi 'else' exp
 >                                        { If     (nIS $1 <++> ann $8 <** ($1:$3 ++ $4:$6 ++ [$7])) $2 $5 $8 }
 >       | 'if' ifaltslist                 {% checkEnabled MultiWayIf >>
@@ -1454,7 +1482,7 @@ A let may bind implicit parameters
 >       : ';'				  {% checkEnabled DoAndIfThenElse >> return [$1] }
 >	| {- empty -}			  { [] }
 
-We won't come here unless XmlSyntax is already checked.
+We wont come here unless XmlSyntax is already checked.
 > opthsxsemi :: { [S] }
 >       : ';'				  { [$1] }
 >	| {- empty -}			  { [] }
@@ -1698,6 +1726,8 @@ Hsx Extensions - requires XmlSyntax, but the lexer handles all that.
 >       | 'infixr'                      { Loc $1 "infixr" }
 >       | 'instance'                    { Loc $1 "instance" }
 >       | 'let'                         { Loc $1 "let" }
+>       | 'version'                     { Loc $1 "version" }
+>       | 'unversion'                   { Loc $1 "unversion" }
 >       | 'mdo'                         { Loc $1 "mdo" }
 >       | 'module'                      { Loc $1 "module" }
 >       | 'newtype'                     { Loc $1 "newtype" }

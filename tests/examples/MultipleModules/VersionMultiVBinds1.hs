@@ -1,0 +1,6 @@
+main =
+  version 
+    A = 2.0.0
+    B = 1.1.2
+  of
+    1

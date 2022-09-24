@@ -55,6 +55,7 @@ module Language.Haskell.Exts.Syntax (
     -- * Declarations
     Decl(..), DeclHead(..), InstRule(..), InstHead(..), Binds(..), IPBind(..), PatternSynDirection(..),
     InjectivityInfo(..), ResultSig(..),
+    VBinds(..), VBind(..), VersionNumber(..),
     -- ** Type classes and instances
     ClassDecl(..), InstDecl(..), Deriving(..), DerivStrategy(..),
     -- ** Data type declarations
@@ -508,6 +509,18 @@ data Binds l
 data IPBind l = IPBind l (IPName l) (Exp l)
   deriving (Eq,Ord,Show,Typeable,Data,Foldable,Traversable,Functor,Generic)
 
+-- | A binding group inside a @version@ clause.
+data VBinds l = VBinds l [VBind l]     -- ^ An ordinary binding group
+  deriving (Eq,Ord,Show,Typeable,Data,Foldable,Traversable,Functor,Generic)
+
+-- | A binding of an module version.
+data VBind l = VBind l (ModuleName l) (VersionNumber l) 
+  deriving (Eq,Ord,Show,Typeable,Data,Foldable,Traversable,Functor,Generic)
+
+-- | A version number that has a form of `[major].[minor].[patch]`.
+data VersionNumber l = VersionNumber l Int Int Int
+  deriving (Eq,Ord,Show,Typeable,Data,Foldable,Traversable,Functor,Generic)
+
 -- | Clauses of a function binding.
 data Match l
      = Match l      (Name l) [Pat l]         (Rhs l) {-where-} (Maybe (Binds l))
@@ -735,6 +748,8 @@ data Exp l
     | NegApp l (Exp l)                      -- ^ negation expression @-/exp/@ (unary minus)
     | Lambda l [Pat l] (Exp l)              -- ^ lambda expression
     | Let l (Binds l) (Exp l)               -- ^ local declarations with @let@ ... @in@ ...
+    | VExt l (Exp l)
+    | VRes l (VBinds l) (Exp l)
     | If l (Exp l) (Exp l) (Exp l)          -- ^ @if@ /exp/ @then@ /exp/ @else@ /exp/
     | MultiIf l [GuardedRhs l]              -- ^ @if@ @|@ /stmts/ @->@ /exp/ ...
     | Case l (Exp l) [Alt l]                -- ^ @case@ /exp/ @of@ /alts/
@@ -1419,6 +1434,18 @@ instance Annotated IPBind where
     ann (IPBind l _ _) = l
     amap f (IPBind l ipn e) = IPBind (f l) ipn e
 
+instance Annotated VBinds where
+    ann (VBinds  l _) = l
+    amap f (VBinds  l vbs) = VBinds (f l) vbs
+
+instance Annotated VBind where
+    ann (VBind  l _ _) = l
+    amap f (VBind  l mn v) = VBind (f l) mn v
+
+instance Annotated VersionNumber where
+    ann (VersionNumber  l _ _ _) = l
+    amap f (VersionNumber  l major minor patch) = VersionNumber (f l) major minor patch
+
 instance Annotated Match where
     ann (Match l _ _ _ _)        = l
     ann (InfixMatch l _ _ _ _ _) = l
@@ -1609,6 +1636,8 @@ instance Annotated Exp where
         NegApp l _             -> l
         Lambda l _ _           -> l
         Let l _ _              -> l
+        VExt l _               -> l
+        VRes l _ _             -> l
         If l _ _ _             -> l
         MultiIf l _            -> l
         Case l _ _             -> l
@@ -1671,6 +1700,8 @@ instance Annotated Exp where
         NegApp l e      -> NegApp (f l) e
         Lambda l ps e   -> Lambda (f l) ps e
         Let l bs e      -> Let (f l) bs e
+        VExt l e        -> VExt (f l) e
+        VRes l vbs e    -> VRes (f l) vbs e
         If l ec et ee   -> If (f l) ec et ee
         Case l e alts   -> Case (f l) e alts
         Do l ss         -> Do (f l) ss

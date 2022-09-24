@@ -976,6 +976,9 @@ instance  Pretty (Exp l) where
                 parensIf (p > 1) $ ppLetExp declList letBody
         prettyPrec p (Let _ (IPBinds _ bindList) letBody) =
                 parensIf (p > 1) $ ppLetExp bindList letBody
+        prettyPrec p (VExt _ extBody) = parensIf (p > 0) $ text "unversion" <+> prettyPrec 2 extBody
+        prettyPrec p (VRes _ (VBinds _ bindList) resBody) =
+                parensIf (p > 1) $ ppVResExp bindList resBody
 
         prettyPrec p (If _ cond thenexp elsexp) = parensIf (p > 1) $
                 myFsep [text "if", pretty cond,
@@ -1108,6 +1111,10 @@ instance  Pretty (XName l) where
 ppLetExp :: (PrettyDeclLike a, Pretty b) => [a] -> b -> Doc
 ppLetExp l b = myFsep [text "let" <+> ppBody letIndent (ppDecls False l),
                         text "in", pretty b]
+
+ppVResExp :: (PrettyDeclLike a, Pretty b) => [a] -> b -> Doc
+ppVResExp l b = myFsep [text "version" <+> ppBody letIndent (ppDecls False l),
+                        text "of", pretty b]
 
 --------------------- Template Haskell -------------------------
 
@@ -1315,6 +1322,22 @@ instance  PrettyDeclLike (IPBind l) where
 instance  Pretty (IPBind l) where
         pretty (IPBind _loc ipname exp) =
                 myFsep [pretty ipname, equals, pretty exp]
+
+-- instance  PrettyDeclLike (VBinds l) where
+--   wantsBlankline _ = False
+
+instance  PrettyDeclLike (VBind l) where
+  wantsBlankline _ = False
+
+-- instance  Pretty (VBinds l) where
+--         pretty (VBinds _loc vbs) =
+--                 myFsep [pretty ipname, text "is", pretty exp]
+
+instance  Pretty (VBind l) where
+        pretty (VBind _loc mn version) = myFsep [pretty mn, equals, pretty version]
+
+instance  Pretty (VersionNumber l) where
+        pretty (VersionNumber _loc major minor patch) = int major <> char '.' <> int minor <> char '.' <> int patch
 
 instance  Pretty (CName l) where
         pretty (VarName _ n) = pretty n
@@ -1546,6 +1569,9 @@ instance SrcInfo loc => Pretty (P.PExp loc) where
                 myFsep [text "if", pretty cond,
                         text "then", pretty thenexp,
                         text "else", pretty elsexp]
+        pretty (P.VExt _ extBody) = myFsep [text "unversion", pretty extBody]
+        pretty (P.VRes _ (VBinds _ bindList) resBody) =
+                ppVResExp bindList resBody
         pretty (P.MultiIf _ alts) =
                 text "if"
                 $$$ ppBody caseIndent (map pretty alts)

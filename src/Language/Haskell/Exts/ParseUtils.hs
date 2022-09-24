@@ -745,6 +745,11 @@ checkExpr e' = case e' of
     -- Hole
     TypeApp l ty   -> return $ S.TypeApp l ty
 
+    -- VersionNumber
+    -- VersionNumber l i1 i2 i3 -> check3Exprs i1 i2 i3 (S.VersionNumber l)
+    VExt l e     -> check1Expr e (S.VExt l)
+    VRes l vbs e -> check1Expr e (S.VRes l vbs)
+
     _             -> fail $ "Parse error in expression: " ++ prettyPrint e'
 
 checkAttr :: ParseXAttr L -> P (S.XAttr L)

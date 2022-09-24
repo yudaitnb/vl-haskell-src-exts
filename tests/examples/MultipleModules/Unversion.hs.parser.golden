@@ -1,0 +1,66 @@
+ParseOk
+  ( Module
+      SrcSpanInfo
+        { srcInfoSpan =
+            SrcSpan "tests/examples/MultipleModules/Unversion.hs" 1 1 2 1
+        , srcInfoPoints =
+            [ SrcSpan "tests/examples/MultipleModules/Unversion.hs" 1 1 1 1
+            , SrcSpan "tests/examples/MultipleModules/Unversion.hs" 1 1 1 1
+            , SrcSpan "tests/examples/MultipleModules/Unversion.hs" 1 1 1 1
+            , SrcSpan "tests/examples/MultipleModules/Unversion.hs" 2 1 2 1
+            , SrcSpan "tests/examples/MultipleModules/Unversion.hs" 2 1 2 1
+            ]
+        }
+      Nothing
+      []
+      []
+      [ PatBind
+          SrcSpanInfo
+            { srcInfoSpan =
+                SrcSpan "tests/examples/MultipleModules/Unversion.hs" 1 1 1 19
+            , srcInfoPoints = []
+            }
+          (PVar
+             SrcSpanInfo
+               { srcInfoSpan =
+                   SrcSpan "tests/examples/MultipleModules/Unversion.hs" 1 1 1 5
+               , srcInfoPoints = []
+               }
+             (Ident
+                SrcSpanInfo
+                  { srcInfoSpan =
+                      SrcSpan "tests/examples/MultipleModules/Unversion.hs" 1 1 1 5
+                  , srcInfoPoints = []
+                  }
+                "main"))
+          (UnGuardedRhs
+             SrcSpanInfo
+               { srcInfoSpan =
+                   SrcSpan "tests/examples/MultipleModules/Unversion.hs" 1 6 1 19
+               , srcInfoPoints =
+                   [ SrcSpan "tests/examples/MultipleModules/Unversion.hs" 1 6 1 7 ]
+               }
+             (VExt
+                SrcSpanInfo
+                  { srcInfoSpan =
+                      SrcSpan "tests/examples/MultipleModules/Unversion.hs" 1 8 1 19
+                  , srcInfoPoints = []
+                  }
+                (Lit
+                   SrcSpanInfo
+                     { srcInfoSpan =
+                         SrcSpan "tests/examples/MultipleModules/Unversion.hs" 1 18 1 19
+                     , srcInfoPoints = []
+                     }
+                   (Int
+                      SrcSpanInfo
+                        { srcInfoSpan =
+                            SrcSpan "tests/examples/MultipleModules/Unversion.hs" 1 18 1 19
+                        , srcInfoPoints = []
+                        }
+                      1
+                      "1"))))
+          Nothing
+      ]
+  , []
+  )

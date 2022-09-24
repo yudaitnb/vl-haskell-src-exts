@@ -1409,6 +1409,15 @@ instance ExactP Exp where
             printStringAt (pos b) "in"
             exactPC e
          _ -> errorEP "ExactP: Exp: Let is given wrong number of srcInfoPoints"
+    VExt _ e      -> printString "unversion" >> exactPC e
+    VRes l vbs e  ->
+        case srcInfoPoints l of
+         [_,b] -> do
+            printString "version"
+            exactPC vbs
+            printStringAt (pos b) "of"
+            exactPC e
+         _ -> errorEP "ExactP: Exp: VRes is given wrong number of srcInfoPoints"
     If l ec et ee   -> -- traceShow (srcInfoPoints l) $ do
         -- First we need to sort out if there are any optional
         -- semicolons hiding among the srcInfoPoints.
@@ -2086,6 +2095,26 @@ instance ExactP XName where
 instance ExactP Binds where
   exactP (BDecls  l ds)  = layoutList (srcInfoPoints l) (sepFunBinds ds)
   exactP (IPBinds l ips) = layoutList (srcInfoPoints l) ips
+
+instance ExactP VBinds where
+  exactP (VBinds l vbs)  = layoutList (srcInfoPoints l) vbs
+
+instance ExactP VBind where
+  exactP (VBind l mn v) =
+    case srcInfoPoints l of
+     [a] -> do
+        exactP mn
+        printStringAt (pos a) "="
+        exactPC v
+     _ -> errorEP "ExactP: VBind is given wrong number of srcInfoPoints"
+
+instance ExactP VersionNumber where
+  exactP (VersionNumber _ major minor patch) = do
+    printString $ show major
+    printString "."
+    printString $ show minor
+    printString "."
+    printString $ show patch
 
 instance ExactP CallConv where
   exactP (StdCall    _) = printString "stdcall"

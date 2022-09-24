@@ -1,0 +1,102 @@
+ParseOk
+  ( Module
+      SrcSpanInfo
+        { srcInfoSpan =
+            SrcSpan "tests/examples/MultipleModules/Version2.hs" 1 1 6 1
+        , srcInfoPoints =
+            [ SrcSpan "tests/examples/MultipleModules/Version2.hs" 1 1 1 1
+            , SrcSpan "tests/examples/MultipleModules/Version2.hs" 1 1 1 1
+            , SrcSpan "tests/examples/MultipleModules/Version2.hs" 1 1 1 1
+            , SrcSpan "tests/examples/MultipleModules/Version2.hs" 6 1 6 1
+            , SrcSpan "tests/examples/MultipleModules/Version2.hs" 6 1 6 1
+            ]
+        }
+      Nothing
+      []
+      []
+      [ PatBind
+          SrcSpanInfo
+            { srcInfoSpan =
+                SrcSpan "tests/examples/MultipleModules/Version2.hs" 1 1 5 6
+            , srcInfoPoints = []
+            }
+          (PVar
+             SrcSpanInfo
+               { srcInfoSpan =
+                   SrcSpan "tests/examples/MultipleModules/Version2.hs" 1 1 1 5
+               , srcInfoPoints = []
+               }
+             (Ident
+                SrcSpanInfo
+                  { srcInfoSpan =
+                      SrcSpan "tests/examples/MultipleModules/Version2.hs" 1 1 1 5
+                  , srcInfoPoints = []
+                  }
+                "main"))
+          (UnGuardedRhs
+             SrcSpanInfo
+               { srcInfoSpan =
+                   SrcSpan "tests/examples/MultipleModules/Version2.hs" 1 6 5 6
+               , srcInfoPoints =
+                   [ SrcSpan "tests/examples/MultipleModules/Version2.hs" 1 6 1 7 ]
+               }
+             (VRes
+                SrcSpanInfo
+                  { srcInfoSpan =
+                      SrcSpan "tests/examples/MultipleModules/Version2.hs" 2 3 5 6
+                  , srcInfoPoints =
+                      [ SrcSpan "tests/examples/MultipleModules/Version2.hs" 2 3 2 10
+                      , SrcSpan "tests/examples/MultipleModules/Version2.hs" 4 3 4 5
+                      ]
+                  }
+                (VBinds
+                   SrcSpanInfo
+                     { srcInfoSpan =
+                         SrcSpan "tests/examples/MultipleModules/Version2.hs" 3 5 3 14
+                     , srcInfoPoints =
+                         [ SrcSpan "tests/examples/MultipleModules/Version2.hs" 3 5 3 5
+                         , SrcSpan "tests/examples/MultipleModules/Version2.hs" 4 3 4 0
+                         ]
+                     }
+                   [ VBind
+                       SrcSpanInfo
+                         { srcInfoSpan =
+                             SrcSpan "tests/examples/MultipleModules/Version2.hs" 3 5 3 14
+                         , srcInfoPoints =
+                             [ SrcSpan "tests/examples/MultipleModules/Version2.hs" 3 7 3 8 ]
+                         }
+                       (ModuleName
+                          SrcSpanInfo
+                            { srcInfoSpan =
+                                SrcSpan "tests/examples/MultipleModules/Version2.hs" 3 5 3 6
+                            , srcInfoPoints = []
+                            }
+                          "A")
+                       (VersionNumber
+                          SrcSpanInfo
+                            { srcInfoSpan =
+                                SrcSpan "tests/examples/MultipleModules/Version2.hs" 3 9 3 14
+                            , srcInfoPoints = []
+                            }
+                          2
+                          0
+                          0)
+                   ])
+                (Lit
+                   SrcSpanInfo
+                     { srcInfoSpan =
+                         SrcSpan "tests/examples/MultipleModules/Version2.hs" 5 5 5 6
+                     , srcInfoPoints = []
+                     }
+                   (Int
+                      SrcSpanInfo
+                        { srcInfoSpan =
+                            SrcSpan "tests/examples/MultipleModules/Version2.hs" 5 5 5 6
+                        , srcInfoPoints = []
+                        }
+                      1
+                      "1"))))
+          Nothing
+      ]
+  , []
+  )

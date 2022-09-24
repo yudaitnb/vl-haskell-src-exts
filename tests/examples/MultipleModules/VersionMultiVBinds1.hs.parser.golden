@@ -1,0 +1,157 @@
+ParseOk
+  ( Module
+      SrcSpanInfo
+        { srcInfoSpan =
+            SrcSpan
+              "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 1 1 7 1
+        , srcInfoPoints =
+            [ SrcSpan
+                "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 1 1 1 1
+            , SrcSpan
+                "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 1 1 1 1
+            , SrcSpan
+                "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 1 1 1 1
+            , SrcSpan
+                "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 7 1 7 1
+            , SrcSpan
+                "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 7 1 7 1
+            ]
+        }
+      Nothing
+      []
+      []
+      [ PatBind
+          SrcSpanInfo
+            { srcInfoSpan =
+                SrcSpan
+                  "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 1 1 6 6
+            , srcInfoPoints = []
+            }
+          (PVar
+             SrcSpanInfo
+               { srcInfoSpan =
+                   SrcSpan
+                     "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 1 1 1 5
+               , srcInfoPoints = []
+               }
+             (Ident
+                SrcSpanInfo
+                  { srcInfoSpan =
+                      SrcSpan
+                        "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 1 1 1 5
+                  , srcInfoPoints = []
+                  }
+                "main"))
+          (UnGuardedRhs
+             SrcSpanInfo
+               { srcInfoSpan =
+                   SrcSpan
+                     "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 1 6 6 6
+               , srcInfoPoints =
+                   [ SrcSpan
+                       "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 1 6 1 7
+                   ]
+               }
+             (VRes
+                SrcSpanInfo
+                  { srcInfoSpan =
+                      SrcSpan
+                        "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 2 3 6 6
+                  , srcInfoPoints =
+                      [ SrcSpan
+                          "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 2 3 2 10
+                      , SrcSpan
+                          "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 5 3 5 5
+                      ]
+                  }
+                (VBinds
+                   SrcSpanInfo
+                     { srcInfoSpan =
+                         SrcSpan
+                           "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 3 5 4 14
+                     , srcInfoPoints =
+                         [ SrcSpan
+                             "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 3 5 3 5
+                         , SrcSpan
+                             "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 4 5 4 5
+                         , SrcSpan
+                             "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 5 3 5 0
+                         ]
+                     }
+                   [ VBind
+                       SrcSpanInfo
+                         { srcInfoSpan =
+                             SrcSpan
+                               "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 3 5 3 14
+                         , srcInfoPoints =
+                             [ SrcSpan
+                                 "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 3 7 3 8
+                             ]
+                         }
+                       (ModuleName
+                          SrcSpanInfo
+                            { srcInfoSpan =
+                                SrcSpan
+                                  "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 3 5 3 6
+                            , srcInfoPoints = []
+                            }
+                          "A")
+                       (VersionNumber
+                          SrcSpanInfo
+                            { srcInfoSpan =
+                                SrcSpan
+                                  "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 3 9 3 14
+                            , srcInfoPoints = []
+                            }
+                          2
+                          0
+                          0)
+                   , VBind
+                       SrcSpanInfo
+                         { srcInfoSpan =
+                             SrcSpan
+                               "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 4 5 4 14
+                         , srcInfoPoints =
+                             [ SrcSpan
+                                 "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 4 7 4 8
+                             ]
+                         }
+                       (ModuleName
+                          SrcSpanInfo
+                            { srcInfoSpan =
+                                SrcSpan
+                                  "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 4 5 4 6
+                            , srcInfoPoints = []
+                            }
+                          "B")
+                       (VersionNumber
+                          SrcSpanInfo
+                            { srcInfoSpan =
+                                SrcSpan
+                                  "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 4 9 4 14
+                            , srcInfoPoints = []
+                            }
+                          1
+                          1
+                          2)
+                   ])
+                (Lit
+                   SrcSpanInfo
+                     { srcInfoSpan =
+                         SrcSpan
+                           "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 6 5 6 6
+                     , srcInfoPoints = []
+                     }
+                   (Int
+                      SrcSpanInfo
+                        { srcInfoSpan =
+                            SrcSpan
+                              "tests/examples/MultipleModules/VersionMultiVBinds1.hs" 6 5 6 6
+                        , srcInfoPoints = []
+                        }
+                      1
+                      "1"))))
+          Nothing
+      ]
+  , []
+  )

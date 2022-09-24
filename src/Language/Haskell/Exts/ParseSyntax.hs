@@ -19,6 +19,8 @@ data PExp l
     | NegApp l (PExp l)                     -- ^ negation expression @-@ /exp/
     | Lambda l [Pat l] (PExp l)             -- ^ lambda expression
     | Let l (Binds l) (PExp l)              -- ^ local declarations with @let@
+    | VExt l (PExp l)
+    | VRes l (VBinds l) (PExp l)
     | If l (PExp l) (PExp l) (PExp l)       -- ^ @if@ /exp/ @then@ /exp/ @else@ /exp/
     | MultiIf l [GuardedRhs l]              -- ^ @if@ @|@ /stmts/ @->@ /exp/ ...
     | Case l (PExp l) [Alt l]               -- ^ @case@ /exp/ @of@ /alts/
@@ -129,6 +131,8 @@ instance Annotated PExp where
         NegApp l _              -> l
         Lambda l _ _            -> l
         Let l _ _               -> l
+        VExt l _                -> l
+        VRes l _ _              -> l
         If l _ _ _              -> l
         Case l _ _              -> l
         Do l _                  -> l
@@ -202,6 +206,8 @@ instance Annotated PExp where
         NegApp l e              -> NegApp (f l) e
         Lambda l ps e           -> Lambda (f l) ps e
         Let l bs e              -> Let (f l) bs e
+        VExt l e                -> VExt (f l) e
+        VRes l vbs e            -> VRes (f l) vbs e
         If l ec et ee           -> If (f l) ec et ee
         Case l e alts           -> Case (f l) e alts
         Do l ss                 -> Do (f l) ss

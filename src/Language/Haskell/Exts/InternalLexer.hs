@@ -49,6 +49,7 @@ data Token
         | QConSym (String,String)
         | IntTok (Integer, String)
         | FloatTok (Rational, String)
+        | VersionTok (String, String, String) -- 1.0.0
         | Character (Char, String)
         | StringTok (String, String)
         | IntTokHash (Integer, String)        -- 1#
@@ -189,6 +190,8 @@ data Token
         | KW_InfixR
         | KW_Instance
         | KW_Let
+        | KW_Ver
+        | KW_UVer
         | KW_Module
         | KW_NewType
         | KW_Of
@@ -290,6 +293,8 @@ reserved_ids = [
  ( "infixr",    (KW_InfixR,     Nothing) ),
  ( "instance",  (KW_Instance,   Nothing) ),
  ( "let",       (KW_Let,        Nothing) ),
+ ( "version",   (KW_Ver,        Nothing) ),
+ ( "unversion", (KW_UVer,       Nothing) ),
  ( "mdo",       (KW_MDo,        Just (Any [RecursiveDo])) ),
  ( "module",    (KW_Module,     Nothing) ),
  ( "newtype",   (KW_NewType,    Nothing) ),
@@ -1020,14 +1025,36 @@ lexDecimalOrFloat = do
                 frac <- lexWhile isDigit
                 let num = parseInteger 10 (ds ++ frac)
                     decimals = toInteger (length frac)
-                (exponent, estr) <- do
-                    rest2 <- getInput
-                    case rest2 of
-                        'e':_ -> lexExponent
-                        'E':_ -> lexExponent
-                        _     -> return (0,"")
-                con <- lexHash FloatTok FloatTokHash (Right DoubleTokHash)
-                return $ con ((num%1) * 10^^(exponent - decimals), ds ++ '.':frac ++ estr)
+                ---------
+                rest2 <- getInput
+                case rest2 of
+                    'e':_ -> do
+                        (exponent, estr) <- lexExponent
+                        con <- lexHash FloatTok FloatTokHash (Right DoubleTokHash)
+                        return $ con ((num%1) * 10^^(exponent - decimals), ds ++ '.':frac ++ estr)
+                    'E':_ -> do
+                        (exponent, estr) <- lexExponent
+                        con <- lexHash FloatTok FloatTokHash (Right DoubleTokHash)
+                        return $ con ((num%1) * 10^^(exponent - decimals), ds ++ '.':frac ++ estr)
+                    ('.':d:_ ) | isDigit d -> do
+                        discard 1
+                        patch <- lexWhile isDigit
+                        let major = ds
+                            minor = frac
+                        return $ VersionTok (major, minor, patch)
+                    _     -> do
+                        (exponent, estr) <- return (0,"")
+                        con <- lexHash FloatTok FloatTokHash (Right DoubleTokHash)
+                        return $ con ((num%1) * 10^^(exponent - decimals), ds ++ '.':frac ++ estr)
+                ---------
+                -- (exponent, estr) <- do
+                --     rest2 <- getInput
+                --     case rest2 of
+                --         'e':_ -> lexExponent
+                --         'E':_ -> lexExponent
+                --         _     -> return (0,"")
+                -- con <- lexHash FloatTok FloatTokHash (Right DoubleTokHash)
+                -- return $ con ((num%1) * 10^^(exponent - decimals), ds ++ '.':frac ++ estr)
         e:_ | toLower e == 'e' -> do
                 (exponent, estr) <- lexExponent
                 con <- lexHash FloatTok FloatTokHash (Right DoubleTokHash)
@@ -1310,6 +1337,29 @@ flagKW t =
        exts <- getExtensionsL
        when (NondecreasingIndentation `elem` exts) flagDo
 
+-- data MultipleVersionsAllowed = MultipleVersions | SingleVersion
+--   deriving Show
+
+-- multipleVersionsEnabled :: [KnownExtension] -> MultipleVersionsAllowed
+-- multipleVersionsEnabled exts = if (MultipleVersions `elem` exts)
+--                                 then MultipleVersions
+--                                 else SingleVersion
+
+-- lexHandleUnderAllowed :: MultipleVersionsAllowed -> (Char -> Bool) -> Lex a (String, String)
+-- lexHandleUnderAllowed SingleVersion p = do
+--   ds <- lexWhile p
+--   return (ds, ds)
+-- lexHandleUnderAllowed MultipleVersions p = do
+--   s <- getInput
+--   case s of
+--       c:_ | p c -> do
+--           raw <- lexWhile (\ic -> p ic || ic == '_')
+--           if (not $ null raw) && last raw == '_'
+--              then fail $ "lexHandleUnderAllowed: numeric must not end with _: " ++ show raw
+--              else return (filter (/= '_') raw, raw)
+--       c:_ -> fail $ "lexHandleUnderAllowed: numeric must start with proper digit: " ++ show c
+--       _ -> fail $ "lexHandleUnderAllowed: token stream exhausted"
+
 -- | Selects ASCII binary digits, i.e. @\'0\'@..@\'1\'@.
 isBinDigit :: Char -> Bool
 isBinDigit c =  c >= '0' && c <= '1'
@@ -1332,6 +1382,7 @@ showToken t = case t of
   QConSym (q,s)     -> q ++ '.':s
   IntTok (_, s)         -> s
   FloatTok (_, s)       -> s
+  VersionTok (s1,s2,s3) -> s1 ++ "." ++ s2 ++ "." ++ s3
   Character (_, s)      -> '\'':s ++ "'"
   StringTok (_, s)      -> '"':s ++ "\""
   IntTokHash (_, s)     -> s ++ "#"
@@ -1453,6 +1504,8 @@ showToken t = case t of
   KW_InfixR     -> "infixr"
   KW_Instance   -> "instance"
   KW_Let        -> "let"
+  KW_Ver        -> "version"
+  KW_UVer       -> "unversion"
   KW_Module     -> "module"
   KW_NewType    -> "newtype"
   KW_Of         -> "of"
